@@ -1,0 +1,15 @@
+{
+  "name": "pysdemosimple",
+  "version": "1.0.0",
+  "description": "physTestSimple",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "vite --port 4000"
+  },
+  "author": "Leo Sipowicz",
+  "license": "ISC",
+  "dependencies": {
+    "vite": "^2.9.12"
+  }
+}
