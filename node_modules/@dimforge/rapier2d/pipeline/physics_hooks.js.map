@@ -1,0 +1,1 @@
+{"version":3,"file":"physics_hooks.js","sourceRoot":"","sources":["../src/pipeline/physics_hooks.ts"],"names":[],"mappings":"AAGA,MAAM,CAAN,IAAY,WAIX;AAJD,WAAY,WAAW;IACnB,6EAA6B,CAAA;IAC7B,uFAAkC,CAAA;IAClC,kEAAkE;AACtE,CAAC,EAJW,WAAW,KAAX,WAAW,QAItB;AAED,MAAM,CAAN,IAAY,WAGX;AAHD,WAAY,WAAW;IACnB,+CAAa,CAAA;IACb,mEAAuB,CAAA;AAC3B,CAAC,EAHW,WAAW,KAAX,WAAW,QAGtB"}

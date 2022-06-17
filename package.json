@@ -10,6 +10,9 @@
   "author": "Leo Sipowicz",
   "license": "ISC",
   "dependencies": {
+    "@dimforge/rapier2d": "^0.8.1",
+    "pixi.js": "^6.4.2",
+    "two.js": "^0.8.10",
     "vite": "^2.9.12"
   }
 }
