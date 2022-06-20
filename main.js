@@ -1,60 +1,85 @@
-//import * as PIXI from "pixi.js";
 import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier2d-compat';
-import render from './graphics';
-import Two from 'https://cdn.skypack.dev/two.js@latest';
-
-
 
 
 export default function run_simulation() {
-  let gravity = new RAPIER.Vector2(0.0, -9.81);
-  let world = new RAPIER.World(gravity);
+    let app = new PIXI.Application({ width: 640, height: 360 });
+    document.body.appendChild(app.view);
+    
+    let gravity = new RAPIER.Vector2(0.0, -9.81);
+    let world = new RAPIER.World(gravity);
+/**
+    // Create Ground.
+    let groundSize = 40.0;
+    let grounds = [
+        {x: 0.0, y: 0.0, hx: groundSize, hy: 0.1},
+        {x: -groundSize, y: groundSize, hx: 0.1, hy: groundSize},
+        {x: groundSize, y: groundSize, hx: 0.1, hy: groundSize},
+    ];
+    
+    grounds.forEach((ground) => {
+        let bodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
+            ground.x,
+            ground.y,
+        );
+        let body = world.createRigidBody(bodyDesc);
+        let colliderDesc = RAPIER.ColliderDesc.cuboid(ground.hx, ground.hy);
+        world.createCollider(colliderDesc, body);
+    });
+     */
+    // Dynamic cubes.
+    let num = 20;
+    let numy = 50;
+    let rad = 1.0;
+    
+    let shift = rad * 2.0 + rad;
+    let centerx = shift * (num / 2);
+    let centery = shift / 2.0;
+    
+    let i, j;
+    
+    for (j = 0; j < numy; ++j) {
+        for (i = 0; i < num; ++i) {
+            let x = i * shift - centerx;
+            let y = j * shift + centery + 3.0;
+    
+            // Create dynamic cube.
+            let bodyDesc = RAPIER.RigidBodyDesc.dynamic().setTranslation(x, y);
+            let body = world.createRigidBody(bodyDesc);
+            let colliderDesc = RAPIER.ColliderDesc.cuboid(rad, rad);
+            world.createCollider(colliderDesc, body);
+        }
+    }
+    
 
-  // Create the ground
-  let groundRigidBodyDesc = RAPIER.RigidBodyDesc.fixed();
-  let groundRigidBody = world.createRigidBody(groundRigidBodyDesc);
-  let groundColliderDesc = RAPIER.ColliderDesc.cuboid(10.0, 0.1);
-  world.createCollider(groundColliderDesc, groundRigidBody);
+    const renderer = new PIXI.Renderer();
+    const scene = new PIXI.Container();
 
-  // Create a dynamic rigid-body.
-  // Use "static" for a static rigid-body instead.
-  let rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
-    .setTranslation(0.0, 1.5);
-  let rigidBody = world.createRigidBody(rigidBodyDesc);
+    function render(world){
+        var objects = new PIXI.Graphics();
+        //objects.clear();
+        world.forEachCollider((elt)=>{
+            let translation = elt.translation();
+            //let rotation = elt.rotation();
+            objects.beginFill(0xff0000);
+            objects.drawRect(translation.x+200, -translation.y+100, 1, 1);
+        })
 
-  // Create a cuboid collider attached to rigidBody.
-  let colliderDesc = RAPIER.ColliderDesc.cuboid(0.5, 0.5)
-    .setDensity(2.0); // The default density is 1.0.
-  let collider = world.createCollider(colliderDesc, rigidBody);
-  // Game loop. Replace by your own game loop system.
-  // graphics
-
-  var params = {
-    fullscreen: true
-  };
-  var elem = document.body;
-  var two = new Two(params).appendTo(elem);
-  var rect = two.makeRectangle(100, 100, 100, 100);
-  rect.fill = 'rgb(255, 0, 0)';
-  var group = two.makeGroup(rect);
-  var cx = 100;
-  var cy = 100;
-  group.position.set(cx, cy);
-
-  two.bind('update', update);
-  // Finally, start the animation loop
-  two.play();
-
-  function update(frameCount) {
-    // This code is called every time two.update() is called.
-    world.step()
-    let position = rigidBody.translation();
-    group.position.set(position.x*1000, position.y*1000);
-
-    console.log("Rigid-body position: ", position.x, position.y);
-
-  }
-
+        app.stage.addChild(objects);
+        renderer.render(scene);
+    }
+    
+    let gameLoop = () => {
+        console.log("in gameloop")
+        // Ste the simulation forward.  
+        world.step();
+        render(world);
+    
+        setTimeout(gameLoop, 16);
+    };
+    console.log(world);
+    gameLoop();
+    
+    
 }
 
 RAPIER.init().then(run_simulation);
