@@ -46,11 +46,8 @@ export default function run_simulation() {
     });
     document.body.appendChild(app.view);
 
-    const container = new PIXI.Container();
-
-    app.stage.addChild(container);
-
-    var objects = new PIXI.Graphics();
+    let objects = new PIXI.Graphics();
+    app.stage.addChild(objects)
 
 
     function addCollider(RAPIER, world, collider) {
@@ -98,10 +95,7 @@ export default function run_simulation() {
                 objects.beginFill(0xff0000);
                 objects.drawRect(gfx.xLoc + 100, -gfx.yLoc + 100, gfx.xSize, gfx.ySize);
             }
-            container.addChild(objects);
         })
-        renderer.render(objects);
-        updatePositions(world, gfx);
     }
 
     function updatePositions(world) {
@@ -117,9 +111,6 @@ export default function run_simulation() {
         });
     }
 
-
-    const renderer = new PIXI.Renderer();
-
     const gfx = new Map();
 
     world.forEachCollider(coll => {
@@ -127,15 +118,13 @@ export default function run_simulation() {
     });
 
 
-    render(world, gfx)
+    //render(world, gfx)
 
     function update() {
+        objects.clear()
+        render(world, gfx)
         updatePositions(world, gfx);
-
         world.step()
-
-        app.render(app.stage);
-
         requestAnimationFrame(update);
     }
 
