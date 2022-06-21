@@ -2,10 +2,11 @@ import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier2d-compat';
 
 
 export default function run_simulation() {
+    //Rapier world settings
     let gravity = new RAPIER.Vector2(0.0, -5.81);
     let world = new RAPIER.World(gravity);
 
-    //ground block
+    //Rapier ground block (static)
     let bodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
         -50,
         -200
@@ -14,10 +15,9 @@ export default function run_simulation() {
     let colliderDesc = RAPIER.ColliderDesc.cuboid(70, 10);
     world.createCollider(colliderDesc, body);
 
-    // Dynamic cubes.
     let num = 50;
     let numy = 2;
-    let rad = 1.0;
+    let rad = 3.0;
 
     let shift = rad * 2.0 + rad;
     let centerx = shift * (num / 2);
@@ -25,12 +25,11 @@ export default function run_simulation() {
 
     let i, j;
 
+    //Rapier falling cubes (dynamic)
     for (j = 0; j < numy; ++j) {
         for (i = 0; i < num; ++i) {
             let x = i * shift - centerx;
             let y = j * shift + centery + 3.0;
-
-            // Create dynamic cube.
             let bodyDesc = RAPIER.RigidBodyDesc.dynamic().setTranslation(x, y);
             let body = world.createRigidBody(bodyDesc);
             let colliderDesc = RAPIER.ColliderDesc.cuboid(rad, rad);
@@ -39,17 +38,19 @@ export default function run_simulation() {
     }
 
 
-    //PIXI GRAPHICS
+    //PixiJs graphics below
     const app = new PIXI.Application({
-        width: 640,
+        width: 440,
         height: 440
     });
     document.body.appendChild(app.view);
 
-    let objects = new PIXI.Graphics();
-    app.stage.addChild(objects)
+    let graphic = new PIXI.Graphics();
+    app.stage.addChild(graphic)
 
+    const ColliderMap = new Map();
 
+    //Loop through rapier coliders and create set key value pair for each in ColliderMap
     function addCollider(RAPIER, world, collider) {
         let type = "UNKNOWN"
         let rad = 0
@@ -82,52 +83,48 @@ export default function run_simulation() {
         shape.rSize = rad;
         shape.xSize = sizeX;
         shape.ySize = sizeY;
-        gfx.set(collider.handle, shape)
+        ColliderMap.set(collider.handle, shape)
     }
 
-
-    function render(world, gfx) {
-        gfx.forEach((gfx) => {
-            if (gfx.type == "BALL") {
-                objects.beginFill(0x0000ff)
-                objects.drawCircle(gfx.xLoc, gfx.yLoc, gfx.rSize)
-            } else if (gfx.type == "CUBE") {
-                objects.beginFill(0xff0000);
-                objects.drawRect(gfx.xLoc + 100, -gfx.yLoc + 100, gfx.xSize, gfx.ySize);
+    //Render each object in ColliderMap in PixiJS graphics
+    function render(world, ColliderMap) {
+        ColliderMap.forEach((ColliderMap) => {
+            if (ColliderMap.type == "BALL") {
+                graphic.beginFill(0x0000ff);
+                graphic.drawCircle(ColliderMap.xLoc, ColliderMap.yLoc, ColliderMap.rSize);
+            } else if (ColliderMap.type == "CUBE") {
+                graphic.beginFill(0xff0000);
+                graphic.drawRect(ColliderMap.xLoc + 100, -ColliderMap.yLoc + 100, ColliderMap.xSize, ColliderMap.ySize);
             }
         })
     }
 
+    //Update ColliderMap positions called each step
     function updatePositions(world) {
         world.forEachCollider((elt) => {
-            let gfxHandle = gfx.get(elt.handle);
+            let CMapHandle = ColliderMap.get(elt.handle);
             let translation = elt.translation();
             let rotation = elt.rotation();
-            if (!!gfxHandle) {
-                gfxHandle.xLoc = translation.x;
-                gfxHandle.yLoc = translation.y;
-                gfxHandle.rotation = -rotation;
+            if (!!CMapHandle) {
+                CMapHandle.xLoc = translation.x;
+                CMapHandle.yLoc = translation.y;
+                CMapHandle.rotation = -rotation;
             }
         });
     }
 
-    const gfx = new Map();
-
-    world.forEachCollider(coll => {
-        addCollider(RAPIER, world, coll);
-    });
-
-
-    //render(world, gfx)
-
+    //Game loop
     function update() {
-        objects.clear()
-        render(world, gfx)
-        updatePositions(world, gfx);
+        graphic.clear()
+        render(world, ColliderMap)
+        updatePositions(world, ColliderMap);
         world.step()
         requestAnimationFrame(update);
     }
 
+    world.forEachCollider(coll => {
+        addCollider(RAPIER, world, coll);
+    });
     requestAnimationFrame(update);
 }
 
