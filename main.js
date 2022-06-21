@@ -3,13 +3,15 @@ import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier2d-compat';
 
 export default function run_simulation() {
     //Rapier world settings
-    let gravity = new RAPIER.Vector2(0.0, -5.81);
+    let gravity = new RAPIER.Vector2(0.0, -9.81*20);
     let world = new RAPIER.World(gravity);
+
+    const sprites = [];
 
     //Rapier ground block (static)
     let bodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
-        -50,
-        -200
+        0,
+        -250
     );
     let body = world.createRigidBody(bodyDesc);
     let colliderDesc = RAPIER.ColliderDesc.cuboid(70, 10);
@@ -19,7 +21,7 @@ export default function run_simulation() {
     let numy = 2;
     let rad = 3.0;
 
-    let shift = rad * 2.0 + rad;
+    let shift = rad * 5.0 + rad;
     let centerx = shift * (num / 2);
     let centery = shift / 2.0;
 
@@ -34,19 +36,49 @@ export default function run_simulation() {
             let body = world.createRigidBody(bodyDesc);
             let colliderDesc = RAPIER.ColliderDesc.cuboid(rad, rad);
             world.createCollider(colliderDesc, body);
+
+            let rand = (Math.floor(Math.random() * 3));
+            let img = null;
+            switch(rand){
+                case 0: {
+                    img = 'commit.png';
+                    break;
+                }
+
+                case 1: {
+                    img = 'pr.png';
+                    break;
+                }
+
+                default: {
+                    img = 'slack.png';
+                    break;
+                }
+            }
+            console.log(img);
+            let curr = PIXI.Sprite.from(img);
+            curr.anchor.x = 0;
+            curr.anchor.y = 0;
+            sprites.push(curr);
         }
     }
+
+    console.log(sprites);
 
 
     //PixiJs graphics below
     const app = new PIXI.Application({
-        width: 440,
-        height: 440
+        width: 1024,
+        height: 768
     });
     document.body.appendChild(app.view);
 
     let graphic = new PIXI.Graphics();
-    app.stage.addChild(graphic)
+    app.stage.addChild(graphic);
+
+    sprites.forEach((el) => {
+        app.stage.addChild(el)
+    });
 
     const ColliderMap = new Map();
 
@@ -88,13 +120,21 @@ export default function run_simulation() {
 
     //Render each object in ColliderMap in PixiJS graphics
     function render(world, ColliderMap) {
-        ColliderMap.forEach((ColliderMap) => {
-            if (ColliderMap.type == "BALL") {
+        let cntr = 0;
+        ColliderMap.forEach((el) => {
+            if (el.type == "BALL") {
                 graphic.beginFill(0x0000ff);
-                graphic.drawCircle(ColliderMap.xLoc, ColliderMap.yLoc, ColliderMap.rSize);
-            } else if (ColliderMap.type == "CUBE") {
+                graphic.drawCircle(el.xLoc, el.yLoc, el.rSize);
+            } else if (el.type == "CUBE") {
+                // need shape to be changed over to a sphere
+                // so that the icons can also be rotated!
+                // also collisions are still an issue
                 graphic.beginFill(0xff0000);
-                graphic.drawRect(ColliderMap.xLoc + 100, -ColliderMap.yLoc + 100, ColliderMap.xSize, ColliderMap.ySize);
+                let curr = sprites[cntr];
+                console.log(curr, cntr);
+                cntr = (cntr+1)%100;
+                curr.position.x = el.xLoc + 100;
+                curr.position.y = -el.yLoc + 100;
             }
         })
     }
