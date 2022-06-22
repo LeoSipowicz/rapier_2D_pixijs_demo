@@ -54,11 +54,11 @@ export default function run_simulation() {
     //Rapier falling cubes (dynamic)
     for (j = 0; j < numy; ++j) {
         for (i = 0; i < num; ++i) {
-            let x = i * shift - centerx;
+            let x = i * shift - centerx+(Math.random()*.10);
             let y = j * shift + centery + 3.0;
             let bodyDesc = RAPIER.RigidBodyDesc.dynamic().setTranslation(x, y);
             let body = world.createRigidBody(bodyDesc);
-            let colliderDesc = RAPIER.ColliderDesc.cuboid(rad, rad);
+            let colliderDesc = RAPIER.ColliderDesc.ball( rad);
             world.createCollider(colliderDesc, body);
 
             let rand = (Math.floor(Math.random() * 3));
@@ -79,7 +79,7 @@ export default function run_simulation() {
                     break;
                 }
             }
-            console.log(img);
+            //console.log(img);
             let curr = PIXI.Sprite.from(img);
             curr.anchor.x = 0;
             curr.anchor.y = 0;
@@ -87,7 +87,7 @@ export default function run_simulation() {
         }
     }
 
-    console.log(sprites);
+    //console.log(sprites);
 
 
     //PixiJs graphics below
@@ -130,7 +130,6 @@ export default function run_simulation() {
         }
         let t = collider.translation();
         let r = collider.rotation();
-
         const shape = {};
         shape.type = type;
         shape.xLoc = t.x;
@@ -148,17 +147,17 @@ export default function run_simulation() {
         ColliderMap.forEach((el) => {
             if (el.type == "BALL") {
                 graphic.beginFill(0x0000ff);
-                graphic.drawCircle(el.xLoc, el.yLoc, el.rSize);
+                let curr = sprites[cntr];
+                cntr = (cntr+1)%100;
+                curr.position.x = el.xLoc + 100;
+                curr.position.y = -el.yLoc + 100;
             } else if (el.type == "CUBE") {
                 // need shape to be changed over to a sphere
                 // so that the icons can also be rotated!
                 // also collisions are still an issue
                 graphic.beginFill(0xff0000);
-                let curr = sprites[cntr];
-                console.log(curr, cntr);
-                cntr = (cntr+1)%100;
-                curr.position.x = el.xLoc + 100;
-                curr.position.y = -el.yLoc + 100;
+                graphic.drawRect(el.xLoc, el.yLoc, el.rSize);
+
             }
         })
     }
