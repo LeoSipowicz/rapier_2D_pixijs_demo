@@ -3,12 +3,13 @@ import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier2d-compat';
 
 
 export default function run_simulation() {
-    const windowSizeX = 500
-    const windowSizeY = 1000
+    const windowSizeX = 640
+    const windowSizeY = 640
     const border = 100
 
     //Rapier world settings
-    let gravity = new RAPIER.Vector2(0.0, -9.81*20);
+    const scaleFactor = 50;
+    let gravity = new RAPIER.Vector2(0.0, -9.81*20); //band-aid solution
     let world = new RAPIER.World(gravity);
 
     const sprites = [];
@@ -43,7 +44,7 @@ export default function run_simulation() {
 
     let num = 50;
     let numy = 2;
-    let rad = 3.0;
+    let rad = 8.0; 
 
     let shift = rad * 5.0 + rad;
     let centerx = shift * (num / 2);
@@ -58,7 +59,7 @@ export default function run_simulation() {
             let y = j * shift + centery + 3.0;
             let bodyDesc = RAPIER.RigidBodyDesc.dynamic().setTranslation(x, y);
             let body = world.createRigidBody(bodyDesc);
-            let colliderDesc = RAPIER.ColliderDesc.ball( rad);
+            let colliderDesc = RAPIER.ColliderDesc.ball(rad);
             world.createCollider(colliderDesc, body);
 
             let rand = (Math.floor(Math.random() * 3));
@@ -81,14 +82,9 @@ export default function run_simulation() {
             }
             //console.log(img);
             let curr = PIXI.Sprite.from(img);
-            curr.anchor.x = 0;
-            curr.anchor.y = 0;
             sprites.push(curr);
         }
     }
-
-    //console.log(sprites);
-
 
     //PixiJs graphics below
     const app = new PIXI.Application({
@@ -154,12 +150,7 @@ export default function run_simulation() {
                 curr.rotation = el.rotation;
                 curr.pivot.set(curr.width/2,curr.height/2);
             } else if (el.type == "CUBE") {
-                // need shape to be changed over to a sphere
-                // so that the icons can also be rotated!
-                // also collisions are still an issue
-                graphic.beginFill(0xff0000);
-                graphic.drawRect(el.xLoc, el.yLoc, el.rSize);
-
+                //Only display balls atm
             }
         })
     }
