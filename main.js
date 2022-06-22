@@ -1,7 +1,12 @@
 import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier2d-compat';
 
 
+
 export default function run_simulation() {
+    const windowSizeX = 500
+    const windowSizeY = 1000
+    const border = 100
+
     //Rapier world settings
     let gravity = new RAPIER.Vector2(0.0, -9.81*20);
     let world = new RAPIER.World(gravity);
@@ -9,13 +14,32 @@ export default function run_simulation() {
     const sprites = [];
 
     //Rapier ground block (static)
-    let bodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
+    let groundBodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
         0,
-        -250
+        (-windowSizeY+border)
     );
-    let body = world.createRigidBody(bodyDesc);
-    let colliderDesc = RAPIER.ColliderDesc.cuboid(70, 10);
-    world.createCollider(colliderDesc, body);
+    let groundBody = world.createRigidBody(groundBodyDesc);
+    let groundColliderDesc = RAPIER.ColliderDesc.cuboid(windowSizeX, 10);
+    world.createCollider(groundColliderDesc, groundBody);
+    
+    //Rapier left wall block (static)
+    let leftWallBodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
+        -border,
+        0
+    );
+    let leftWallBody = world.createRigidBody(leftWallBodyDesc);
+    let leftWallColliderDesc = RAPIER.ColliderDesc.cuboid(10, windowSizeY);
+    world.createCollider(leftWallColliderDesc, leftWallBody);
+
+    //Rapier right wall block (static)
+    let rightWallBodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
+        windowSizeX-border,
+        0
+    );
+    let rightWallBody = world.createRigidBody(rightWallBodyDesc);
+    let rightWallColliderDesc = RAPIER.ColliderDesc.cuboid(10, windowSizeY);
+    world.createCollider(rightWallColliderDesc, rightWallBody);
+
 
     let num = 50;
     let numy = 2;
@@ -68,8 +92,8 @@ export default function run_simulation() {
 
     //PixiJs graphics below
     const app = new PIXI.Application({
-        width: 1024,
-        height: 768
+        width: windowSizeX,
+        height: windowSizeY
     });
     document.body.appendChild(app.view);
 
