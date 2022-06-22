@@ -151,6 +151,8 @@ export default function run_simulation() {
                 cntr = (cntr+1)%100;
                 curr.position.x = el.xLoc + 100;
                 curr.position.y = -el.yLoc + 100;
+                curr.rotation = el.rotation;
+                curr.pivot.set(curr.width/2,curr.height/2);
             } else if (el.type == "CUBE") {
                 // need shape to be changed over to a sphere
                 // so that the icons can also be rotated!
