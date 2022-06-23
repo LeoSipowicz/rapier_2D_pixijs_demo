@@ -3,13 +3,13 @@ import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier2d-compat';
 
 
 export default function run_simulation() {
-    const windowSizeX = 640
-    const windowSizeY = 640
+    const windowSizeX = 1000
+    const windowSizeY = 800
     const border = 100
 
     //Rapier world settings
     const scaleFactor = 50;
-    let gravity = new RAPIER.Vector2(0.0, -9.81*20); //band-aid solution
+    let gravity = new RAPIER.Vector2(0.0, -9.81*40); //band-aid solution
     let world = new RAPIER.World(gravity);
 
     const sprites = [];
@@ -42,12 +42,14 @@ export default function run_simulation() {
     world.createCollider(rightWallColliderDesc, rightWallBody);
 
 
-    let num = 50;
-    let numy = 2;
+    // The numbodies can be as high as 6000 and still be good performance wise
+    let num = 7;
+    let numy = 100;
+    let numBodies = num*numy;
     let rad = 8.0; 
 
-    let shift = rad * 5.0 + rad;
-    let centerx = shift * (num / 2);
+    let shift = rad * 1.5 + rad;
+    let centerx = shift * (num / 2) - 400;
     let centery = shift / 2.0;
 
     let i, j;
@@ -55,7 +57,7 @@ export default function run_simulation() {
     //Rapier falling cubes (dynamic)
     for (j = 0; j < numy; ++j) {
         for (i = 0; i < num; ++i) {
-            let x = i * shift - centerx+(Math.random()*.10);
+            let x = i * shift - centerx + Math.random();
             let y = j * shift + centery + 3.0;
             let bodyDesc = RAPIER.RigidBodyDesc.dynamic().setTranslation(x, y);
             let body = world.createRigidBody(bodyDesc);
@@ -144,7 +146,7 @@ export default function run_simulation() {
             if (el.type == "BALL") {
                 graphic.beginFill(0x0000ff);
                 let curr = sprites[cntr];
-                cntr = (cntr+1)%100;
+                cntr = (cntr+1)%numBodies;
                 curr.position.x = el.xLoc + 100;
                 curr.position.y = -el.yLoc + 100;
                 curr.rotation = el.rotation;
