@@ -5,5 +5,11 @@ Simple example of getting 2d [rapier](https://rapier.rs/) physics rendering as f
 https://user-images.githubusercontent.com/46508152/175604066-a89f8b3e-6c32-49de-9b7c-0ead97910b95.mov
 
 # Getting Started
+Either open the index.html file in a live server or run
 
-Just open the index.html in a live server in chrome or firefox
+```
+npm install
+npm start
+```
+
+Then navigate your browser to `localhost:4000`.
