@@ -1,0 +1,31 @@
+{
+  "name": "rapier2dwithpixijsdemo",
+  "version": "1.0.0",
+  "description": "Demo of PixiJS rendering Rapier physics in one file",
+  "main": "main.js",
+  "scripts": {
+    "start": "npm run open",
+    "open": "concurrently \"http-server -a localhost -p 1234\" \"open http://localhost:1234/build\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeoSipowicz/Rapier2dWithPixijsDemo.git"
+  },
+  "keywords": [
+    "rapier",
+    "pixijs"
+  ],
+  "author": "Leo Sipowicz",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LeoSipowicz/Rapier2dWithPixijsDemo/issues"
+  },
+  "homepage": "https://github.com/LeoSipowicz/Rapier2dWithPixijsDemo#readme",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  },
+  "dependencies": {
+    "concurrently": "^7.2.2"
+  }
+}
