@@ -8,8 +8,8 @@ export default function run_simulation() {
     const border = 100
 
     //Rapier world settings
-    const scaleFactor = 50;
-    let gravity = new RAPIER.Vector2(0.0, -9.81*40); //band-aid solution
+    const scaleFactor = 50; 
+    let gravity = new RAPIER.Vector2(0.0, -9.81 * 40); //Band-aid solution for slow gravity bug
     let world = new RAPIER.World(gravity);
 
     const sprites = [];
@@ -17,12 +17,12 @@ export default function run_simulation() {
     //Rapier ground block (static)
     let groundBodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
         0,
-        (-windowSizeY+border)
+        (-windowSizeY + border)
     );
     let groundBody = world.createRigidBody(groundBodyDesc);
     let groundColliderDesc = RAPIER.ColliderDesc.cuboid(windowSizeX, 10);
     world.createCollider(groundColliderDesc, groundBody);
-    
+
     //Rapier left wall block (static)
     let leftWallBodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
         -border,
@@ -34,7 +34,7 @@ export default function run_simulation() {
 
     //Rapier right wall block (static)
     let rightWallBodyDesc = RAPIER.RigidBodyDesc.fixed().setTranslation(
-        windowSizeX-border,
+        windowSizeX - border,
         0
     );
     let rightWallBody = world.createRigidBody(rightWallBodyDesc);
@@ -45,8 +45,8 @@ export default function run_simulation() {
     // The numbodies can be as high as 6000 and still be good performance wise
     let num = 7;
     let numy = 100;
-    let numBodies = num*numy;
-    let rad = 8.0; 
+    let numBodies = num * numy;
+    let rad = 8.0;
 
     let shift = rad * 1.5 + rad;
     let centerx = shift * (num / 2) - 400;
@@ -66,19 +66,19 @@ export default function run_simulation() {
 
             let rand = (Math.floor(Math.random() * 3));
             let img = null;
-            switch(rand){
+            switch (rand) {
                 case 0: {
-                    img = 'commit.png';
+                    img = 'images/redBall.png';
                     break;
                 }
 
                 case 1: {
-                    img = 'pr.png';
+                    img = 'images/yellowBall.png';
                     break;
                 }
 
                 default: {
-                    img = 'slack.png';
+                    img = 'images/blueBall.png';
                     break;
                 }
             }
@@ -146,11 +146,11 @@ export default function run_simulation() {
             if (el.type == "BALL") {
                 graphic.beginFill(0x0000ff);
                 let curr = sprites[cntr];
-                cntr = (cntr+1)%numBodies;
+                cntr = (cntr + 1) % numBodies;
                 curr.position.x = el.xLoc + 100;
                 curr.position.y = -el.yLoc + 100;
                 curr.rotation = el.rotation;
-                curr.pivot.set(curr.width/2,curr.height/2);
+                curr.pivot.set(curr.width / 2, curr.height / 2);
             } else if (el.type == "CUBE") {
                 //Only display balls atm
             }
