@@ -1,7 +1,5 @@
 import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier2d-compat';
 
-
-
 export default function run_simulation() {
     const windowSizeX = 1000
     const windowSizeY = 800
@@ -9,7 +7,7 @@ export default function run_simulation() {
 
     //Rapier world settings
     const scaleFactor = 50; 
-    let gravity = new RAPIER.Vector2(0.0, -9.81 * 40); //Band-aid solution for slow gravity bug
+    let gravity = new RAPIER.Vector2(0.0, -9.81 * scaleFactor); //Band-aid solution for slow gravity bug
     let world = new RAPIER.World(gravity);
 
     const sprites = [];
@@ -82,11 +80,32 @@ export default function run_simulation() {
                     break;
                 }
             }
-            //console.log(img);
             let curr = PIXI.Sprite.from(img);
             sprites.push(curr);
         }
     }
+
+    // Create the cursor object
+    let goal = null;
+    const direction = { x: 0, y: 0 };
+    const cursorBody = world.createRigidBody(
+        RAPIER.RigidBodyDesc.newDynamic().setTranslation(
+           0,
+           0 
+        )
+    );
+    let cursorColliderDesc = new RAPIER.ColliderDesc(
+        new RAPIER.Cuboid(30,30)
+    ).setTranslation(0,0);
+    const cursorCollider = world.createCollider(cursorColliderDesc, cursorBody);
+
+    document.addEventListener("mousemove", (e) => {
+        const { offsetX, offsetY } = e;
+        goal = {
+            x: offsetX,
+            y: -offsetY,
+        };
+    });
 
     //PixiJs graphics below
     const app = new PIXI.Application({
@@ -151,14 +170,40 @@ export default function run_simulation() {
                 curr.position.y = -el.yLoc + 100;
                 curr.rotation = el.rotation;
                 curr.pivot.set(curr.width / 2, curr.height / 2);
-            } else if (el.type == "CUBE") {
-                //Only display balls atm
             }
         })
     }
 
     //Update ColliderMap positions called each step
-    function updatePositions(world) {
+    function updatePositions(world) {       
+        // If our cursor has been on the page, then goal exists
+        if(goal) {
+            const cursorPosition = cursorBody.translation();
+            const cursorDistFromGoal = Math.sqrt(
+                (cursorPosition.x - goal.x)**2 + (cursorPosition.y - goal.y)**2
+            );
+            if(cursorDistFromGoal<10){
+                // We've arrived at our goal
+                cursorBody.setTranslation(goal,true);
+                direction.x = 0;
+                direction.y = 0;
+                goal = undefined;
+            }else{
+                // Move towards the goal
+                const x = goal.x - cursorPosition.x - 105;
+                const y = goal.y - cursorPosition.y + 105;
+                const div = Math.max(Math.abs(x), Math.abs(y));
+                direction.x = x / div;
+                direction.y = y / div;
+            }
+        }
+
+        cursorBody.setLinvel(
+            { x: direction.x*1000, y: direction.y*1000 },
+            true
+        );
+        cursorCollider.setActiveHooks(RAPIER.ActiveHooks.FILTER_CONTACT_PAIRS);
+
         world.forEachCollider((elt) => {
             let CMapHandle = ColliderMap.get(elt.handle);
             let translation = elt.translation();
