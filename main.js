@@ -41,9 +41,9 @@ export default function run_simulation() {
 
 
     // The numbodies can be as high as 6000 and still be good performance wise
-    let num = 20;
-    let numy = 30;
-    let numBodies = num * numy; 
+    let num = 7;
+    let numy = 100;
+    let numBodies = num * numy;
     let rad = 8.0;
 
     let shift = rad * 1.5 + rad;
